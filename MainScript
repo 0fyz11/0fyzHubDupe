@@ -1,0 +1,126 @@
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer
+
+-- GUI Setup
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "DupeGUI"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+
+-- UI Utility Functions
+local function roundify(obj, rad)
+	local uic = Instance.new("UICorner")
+	uic.CornerRadius = UDim.new(0, rad)
+	uic.Parent = obj
+end
+
+local function stroke(obj, color, thickness)
+	local s = Instance.new("UIStroke")
+	s.Color = color or Color3.fromRGB(50, 50, 50)
+	s.Thickness = thickness or 1
+	s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	s.Parent = obj
+end
+
+-- Open/Close Button (top screen)
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Size = UDim2.new(0, 140, 0, 30)
+toggleBtn.Position = UDim2.new(0.5, -70, 0, 10)
+toggleBtn.Text = "Close Dupe"
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 14
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+roundify(toggleBtn, 8)
+stroke(toggleBtn)
+
+-- Main Frame
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 240, 0, 130)
+frame.Position = UDim2.new(0.5, -120, 0.5, -65)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.Active = true
+frame.Draggable = true
+frame.Visible = false
+roundify(frame, 8)
+stroke(frame)
+
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 25)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.Text = "Grow a Garden Dupe by 0fyz"
+title.TextColor3 = Color3.fromRGB(200, 200, 200)
+title.TextTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.BackgroundTransparency = 1
+title.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Dupe Button
+local dupeBtn = Instance.new("TextButton", frame)
+dupeBtn.Size = UDim2.new(0.8, 0, 0, 40)
+dupeBtn.Position = UDim2.new(0.1, 0, 0.55, 0)
+dupeBtn.Text = "Duplicate Tool"
+dupeBtn.Font = Enum.Font.Gotham
+dupeBtn.TextSize = 16
+dupeBtn.TextColor3 = Color3.fromRGB(230, 230, 230)
+dupeBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+roundify(dupeBtn, 6)
+stroke(dupeBtn)
+
+-- Notification
+local notif = Instance.new("TextLabel", gui)
+notif.Size = UDim2.new(0, 200, 0, 30)
+notif.Position = UDim2.new(1, -210, 1, -40)
+notif.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+notif.TextColor3 = Color3.fromRGB(255, 255, 255)
+notif.Text = "Duping... wait 1 sec"
+notif.TextSize = 14
+notif.Font = Enum.Font.Gotham
+notif.Visible = false
+roundify(notif, 6)
+stroke(notif)
+
+-- Open/Close Toggle Logic
+local isOpen = true
+local function toggleGUI()
+	isOpen = not isOpen
+	frame.Visible = isOpen
+	toggleBtn.Text = isOpen and "Close Dupe" or "Open Dupe"
+end
+
+toggleBtn.MouseButton1Click:Connect(toggleGUI)
+
+-- Animate GUI In
+frame.Visible = true
+TweenService:Create(title, TweenInfo.new(1), {TextTransparency = 0}):Play()
+TweenService:Create(frame, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -120, 0.5, -65)}):Play()
+
+-- Dupe Logic
+dupeBtn.MouseButton1Click:Connect(function()
+	notif.Visible = true
+	notif.Text = "Duping... wait 1 sec"
+
+	task.delay(1, function()
+		notif.Visible = false
+
+		local char = player.Character or player.CharacterAdded:Wait()
+		for _, item in pairs(char:GetChildren()) do
+			if item:IsA("Tool") then
+				local clone = item:Clone()
+
+				-- Enable all scripts
+				for _, obj in pairs(clone:GetDescendants()) do
+					if obj:IsA("Script") or obj:IsA("LocalScript") then
+						obj.Disabled = false
+					end
+				end
+
+				clone.Parent = player.Backpack
+				print("[Dupe Tool] Successfully duplicated: " .. item.Name)
+				break
+			end
+		end
+	end)
+end)
