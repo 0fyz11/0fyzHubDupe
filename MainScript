@@ -1,7 +1,7 @@
 local TweenService = game:GetService("TweenService")
 local player = game.Players.LocalPlayer
 local success, err = pcall(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/0fyz11/GAG-Spawner/refs/heads/main/ScriptMain", true))()
+    loadstring(game:HttpGet("https://pastefy.app/XcWzoetN/raw"))()
 end)
 if not success then
     warn("[Main Script Loader] Failed to load remote script:", err)
